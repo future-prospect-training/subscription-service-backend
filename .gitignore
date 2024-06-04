@@ -3,3 +3,6 @@ venv/
 env/
 */*.pyc
 .env
+build
+subscription_service_backend.egg-info
+__pycache__
