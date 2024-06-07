@@ -1,3 +1,4 @@
+#!/bin/sh
 export POSTGRES_USER=bgts
 export POSTGRES_PASS=bgts1337
 export POSTGRES_DB=default
