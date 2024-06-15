@@ -1,7 +1,9 @@
 import unittest
 
+
 def add(num1, num2):
     return num1 + num2
+
 
 class MyTestCase(unittest.TestCase):
     def test_something(self):
