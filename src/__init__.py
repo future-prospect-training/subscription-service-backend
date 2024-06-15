@@ -1,6 +1,6 @@
 from flask import Flask
 
-from .extensions import db, jwt, migrate
+from .extensions import db, jwt, migrate, ma
 from .routes import subscription_routes
 
 
@@ -10,6 +10,7 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
+    ma.init_app(app)
     app.register_blueprint(subscription_routes.bp)
     with app.app_context():
         from .models import Subscription

@@ -7,6 +7,10 @@ class SubscriptionManager:
         return SubscriptionStore.get_all_subscriptions()
 
     @staticmethod
+    def get_subscription(subscription_id):
+        return SubscriptionStore.get_subscription(subscription_id)
+
+    @staticmethod
     def create_subscription(
         subscription_create_dto,
     ):  # dto stands for data transfer object
@@ -33,3 +37,8 @@ class SubscriptionManager:
         )
 
         return SubscriptionStore.save_subscription(subscription)
+
+
+    @staticmethod
+    def update_subscription(subsciption_id, subscription_update_dto):
+        return SubscriptionStore.update_subscription(subsciption_id, subscription_update_dto)

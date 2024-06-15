@@ -11,6 +11,8 @@ class SubscriptionState(enum.Enum):
 
 
 class Subscription(db.Model):
+    __tablename__ = "subscriptions"
+
     def __init__(
         self,
         created_at,

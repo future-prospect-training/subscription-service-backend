@@ -15,6 +15,8 @@ setup(
         "Flask-JWT-Extended==4.6.0",
         "psycopg2-binary==2.9.3",
         "marshmallow==3.14.1",
+        "flask-marshmallow==1.2.1",
+        "marshmallow_sqlalchemy==1.0",
         "celery==5.2.3",
         "wheel==0.43.0",
         "python-dotenv==1.0.1",
