@@ -5,11 +5,11 @@ from ..models.Subscription import Subscription
 class SubscriptionStore:
     @staticmethod
     def get_all_subscriptions():
-        return Subscription.objects.all()  # SELECT * FROM subscriptions
+        return Subscription.query.all()  # SELECT * FROM subscriptions
 
     @staticmethod
     def get_subscription(subscription_id):
-        return Subscription.query.get({"id": subscription_id})
+        return Subscription.query.get(subscription_id)
 
     @staticmethod
     def save_subscription(subscription):
@@ -17,9 +17,9 @@ class SubscriptionStore:
             db.session.add(subscription)
             db.session.commit()
             return subscription
-        except:
+        except Exception as e:
             db.session.rollback()
-            raise
+            raise e
 
     @staticmethod
     def update_subscription(subscription_id, subscription_update_dto):
@@ -28,12 +28,14 @@ class SubscriptionStore:
             if not subscription:
                 return None
 
-            # TODO: Fix this to not throw an error, because items is not a valid method
-            for key, value in subscription_update_dto.items():
+            subscription_update_dict = dict(
+                subscription_update_dto
+            )  # Convert to a dictionary
+            for key, value in subscription_update_dict.items():
                 setattr(subscription, key, value)
 
             db.session.commit()
             return subscription
-        except:
+        except Exception as e:
             db.session.rollback()
-            raise
+            raise e
