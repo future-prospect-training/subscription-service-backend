@@ -3,23 +3,24 @@ import logging
 from psycopg2 import OperationalError, ProgrammingError
 
 from ..models.Subscription import Subscription
-from ..stores.SubscriptionStore import SubscriptionStore
+
 
 # Configure logging
 logging.basicConfig(level=logging.ERROR)
 
 
 class SubscriptionManager:
+    def __init__(self, subscription_store):
+        self.subscription_store = subscription_store
+
     def get_all_subscriptions(self):
-        return SubscriptionStore.get_all_subscriptions()
+        return self.subscription_store.get_all_subscriptions()
 
-    @staticmethod
-    def get_subscription(subscription_id):
-        return SubscriptionStore.get_subscription(subscription_id)
+    def get_subscription(self, subscription_id):
+        return self.subscription_store.get_subscription(subscription_id)
 
-    @staticmethod
-    def create_subscription(subscription_create_dto):
-        # Input validation
+    def create_subscription(self, subscription_create_dto):
+        # Input validation   # Input validadtion should be done on router level. Please move it there.
         required_fields = [
             "created_at",
             "updated_at",
@@ -52,7 +53,7 @@ class SubscriptionManager:
                 state=subscription_create_dto.get("state"),
             )
 
-            return SubscriptionStore.save_subscription(subscription)
+            return self.subscription_store.save_subscription(subscription)
         except OperationalError as e:
             logging.error(f"Database error creating subscription: {e}")
             raise
@@ -63,14 +64,13 @@ class SubscriptionManager:
             logging.error(f"Error creating subscription: {e}")
             raise
 
-    @staticmethod
-    def update_subscription(subscription_id, subscription_update_dto):
+    def update_subscription(self, subscription_id, subscription_update_dto):
         # Input validation
         if not subscription_update_dto:
             raise ValueError("subscription_update_dto cannot be empty")
 
         try:
-            return SubscriptionStore.update_subscription(
+            return self.subscription_store.update_subscription(
                 subscription_id, subscription_update_dto
             )
         except OperationalError as e:
