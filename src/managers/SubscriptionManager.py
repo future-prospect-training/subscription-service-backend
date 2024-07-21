@@ -4,7 +4,6 @@ from psycopg2 import OperationalError, ProgrammingError
 
 from ..models.Subscription import Subscription
 
-
 # Configure logging
 logging.basicConfig(level=logging.ERROR)
 
@@ -20,40 +19,8 @@ class SubscriptionManager:
         return self.subscription_store.get_subscription(subscription_id)
 
     def create_subscription(self, subscription_create_dto):
-        # Input validation   # Input validadtion should be done on router level. Please move it there.
-        required_fields = [
-            "created_at",
-            "updated_at",
-            "activated_at",
-            "cancelled_at",
-            "expires_at",
-            "current_period_started_at",
-            "current_period_ends_at",
-            "state",
-        ]
-        missing_fields = [
-            field for field in required_fields if field not in subscription_create_dto
-        ]
-        if missing_fields:
-            raise ValueError(f"Missing required fields: {', '.join(missing_fields)}")
-
         try:
-            subscription = Subscription(
-                created_at=subscription_create_dto.get("created_at"),
-                updated_at=subscription_create_dto.get("updated_at"),
-                activated_at=subscription_create_dto.get("activated_at"),
-                cancelled_at=subscription_create_dto.get("cancelled_at"),
-                expires_at=subscription_create_dto.get("expires_at"),
-                current_period_started_at=subscription_create_dto.get(
-                    "current_period_started_at"
-                ),
-                current_period_ends_at=subscription_create_dto.get(
-                    "current_period_ends_at"
-                ),
-                state=subscription_create_dto.get("state"),
-            )
-
-            return self.subscription_store.save_subscription(subscription)
+            return self.subscription_store.save_subscription(subscription_create_dto)
         except OperationalError as e:
             logging.error(f"Database error creating subscription: {e}")
             raise

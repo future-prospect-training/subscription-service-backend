@@ -1,6 +1,9 @@
 from flask import Blueprint, jsonify, request
 
 from ..schemas.SubscriptionSchema import SubscriptionSchema
+from .middleware.validate_subscription_create_input import (
+    validate_subscription_create_input,
+)
 from .utils.StatusCode import HttpStatus
 
 
@@ -9,14 +12,39 @@ class SubscriptionRoutes:
 
     def __init__(self, subsciption_manager):
         self.subscription_manager = subsciption_manager
-    
+
         # Register the routes
-        self.bp.add_url_rule("/subscriptions", "get_all_subscriptions", self.get_all_subscriptions, methods=["GET"])
-        self.bp.add_url_rule("/subscriptions/<int:subscription_id>", "get_subscription", self.get_subscription, methods=["GET"])
-        self.bp.add_url_rule("/subscriptions", "create_subscription", self.create_subscription, methods=["POST"])
-        self.bp.add_url_rule("/subscriptions/<int:subscription_id>", "update_subscription", self.update_subscription, methods=["PUT"])
-        self.bp.add_url_rule("/subscriptions/<int:subscription_id>", "delete_subscription", self.delete_subscription, methods=["DELETE"])
-    
+        self.bp.add_url_rule(
+            "/subscriptions",
+            "get_all_subscriptions",
+            self.get_all_subscriptions,
+            methods=["GET"],
+        )
+        self.bp.add_url_rule(
+            "/subscriptions/<int:subscription_id>",
+            "get_subscription",
+            self.get_subscription,
+            methods=["GET"],
+        )
+        self.bp.add_url_rule(
+            "/subscriptions",
+            "create_subscription",
+            self.create_subscription,
+            methods=["POST"],
+        )
+        self.bp.add_url_rule(
+            "/subscriptions/<int:subscription_id>",
+            "update_subscription",
+            self.update_subscription,
+            methods=["PUT"],
+        )
+        self.bp.add_url_rule(
+            "/subscriptions/<int:subscription_id>",
+            "delete_subscription",
+            self.delete_subscription,
+            methods=["DELETE"],
+        )
+
     def get_all_subscriptions(self):
         subscriptions = self.subscription_manager.get_all_subscriptions()
         return {
@@ -30,19 +58,9 @@ class SubscriptionRoutes:
             return {"error": "Subscription not found"}, HttpStatus.NOT_FOUND.value
         return {"success": True, "data": subscription.to_dict()}, HttpStatus.OK.value
 
+    @validate_subscription_create_input
     def create_subscription(self):
-        fields = [
-            "created_at",
-            "updated_at",
-            "activated_at",
-            "cancelled_at",
-            "expires_at",
-            "current_period_started_at",
-            "current_period_ends_at",
-            "state",
-        ]
-        subscription_create_dto = {field: request.json.get(field) for field in fields}
-
+        subscription_create_dto = request.fields
         subscription = self.subscription_manager.create_subscription(
             subscription_create_dto
         )
