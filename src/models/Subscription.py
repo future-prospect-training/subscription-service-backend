@@ -1,4 +1,5 @@
 import enum
+from datetime import datetime
 
 from ..extensions import db
 
@@ -54,3 +55,42 @@ class Subscription(db.Model):
             "current_period_ends_at": self.current_period_ends_at,
             "state": self.state.value,
         }
+
+    def activate(self):
+        self.state = SubscriptionState.active
+        self.activated_at = datetime.now()
+        db.session.commit()
+
+    def cancel(self):
+        self.state = SubscriptionState.cancelled
+        self.cancelled_at = datetime.now()
+        db.session.commit()
+
+    def expire(self):
+        self.state = SubscriptionState.expired
+        self.expires_at = datetime.now()
+        db.session.commit()
+
+    def update_status(self):
+        if self.expires_at and self.expires_at < datetime.now():
+            self.expire()
+        elif self.cancelled_at and self.cancelled_at < datetime.now():
+            self.cancel()
+        elif self.activated_at and self.state == SubscriptionState.pending:
+            self.activate()
+
+    @classmethod
+    def get_active_subscriptions(cls):
+        return cls.query.filter_by(state=SubscriptionState.active).all()
+
+    @classmethod
+    def get_pending_subscriptions(cls):
+        return cls.query.filter_by(state=SubscriptionState.pending).all()
+
+    @classmethod
+    def get_cancelled_subscriptions(cls):
+        return cls.query.filter_by(state=SubscriptionState.cancelled).all()
+
+    @classmethod
+    def get_expired_subscriptions(cls):
+        return cls.query.filter_by(state=SubscriptionState.expired).all()

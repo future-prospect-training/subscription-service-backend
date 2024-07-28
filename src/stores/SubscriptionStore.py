@@ -39,3 +39,34 @@ class SubscriptionStore:
         except Exception as e:
             self.db.session.rollback()
             raise e
+
+    def delete_subscription(self, subscription_id):
+        try:
+            subscription = Subscription.query.get(subscription_id)
+            if not subscription:
+                return None
+
+            self.db.session.delete(subscription)
+            self.db.session.commit()
+            return True
+        except Exception as e:
+            self.db.session.rollback()
+            raise e
+
+    def get_active_subscriptions(self):
+        return Subscription.query.filter_by(status="active").all()
+
+    def get_pending_subscriptions(self):
+        return Subscription.query.filter_by(status="pending").all()
+
+    def get_expired_subscriptions(self):
+        return Subscription.query.filter_by(status="expired").all()
+
+    def get_cancelled_subscriptions(self):
+        return Subscription.query.filter_by(status="cancelled").all()
+
+    def get_subscription_by_user_id(self, user_id):
+        return Subscription.query.filter_by(user_id=user_id).first()
+
+    def get_subscription_by_product_id(self, product_id):
+        return Subscription.query.filter_by(product_id=product_id).first()

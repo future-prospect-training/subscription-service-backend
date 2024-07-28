@@ -4,6 +4,9 @@ from ..schemas.SubscriptionSchema import SubscriptionSchema
 from .middleware.validate_subscription_create_input import (
     validate_subscription_create_input,
 )
+from .middleware.validate_subscription_update_input import (
+    validate_subscription_update_input,
+)
 from .utils.StatusCode import HttpStatus
 
 
@@ -69,26 +72,19 @@ class SubscriptionRoutes:
             "data": subscription.to_dict(),
         }, HttpStatus.CREATED.value
 
-    def update_subscription(self, subscription_id):
-        subscription_schema = SubscriptionSchema()
-        subscription_data = request.get_json()
+    @validate_subscription_update_input
+    def update_subscription(self, subscription_update_dto, subscription_id):
+        subscription = self.subscription_manager.get_subscription(subscription_id)
+        if subscription is None:
+            return {"error": "Subscription not found"}, HttpStatus.NOT_FOUND.value
 
-        try:
-            subscription_update_dto = subscription_schema.load(subscription_data)
-
-            subscription = self.subscription_manager.get_subscription(subscription_id)
-            if subscription is None:
-                return {"error": "Subscription not found"}, HttpStatus.NOT_FOUND.value
-
-            updated_subscription = self.subscription_manager.update_subscription(
-                subscription_id, subscription_update_dto  # Pass the update DTO directly
-            )
-            return {
-                "success": True,
-                "data": updated_subscription.to_dict(),
-            }, HttpStatus.OK.value
-        except Exception as e:
-            return {"error": str(e)}, HttpStatus.BAD_REQUEST.value
+        updated_subscription = self.subscription_manager.update_subscription(
+            subscription_id, subscription_update_dto
+        )
+        return {
+            "success": True,
+            "data": updated_subscription.to_dict(),
+        }, HttpStatus.OK.value
 
     def delete_subscription(self, subscription_id):
         subscription = self.subscription_manager.get_subscription(subscription_id)
