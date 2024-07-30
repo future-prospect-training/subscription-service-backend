@@ -17,9 +17,10 @@ setup(
         "marshmallow==3.14.1",
         "flask-marshmallow==1.2.1",
         "marshmallow_sqlalchemy==1.0",
-        "celery==5.2.3",
+        "celery==5.4.0",
         "wheel==0.43.0",
         "python-dotenv==1.0.1",
         "Werkzeug==3.0.3",
+        "marshmallow-enum==1.5.1",
     ],
 )

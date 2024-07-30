@@ -16,17 +16,13 @@ class Subscription(db.Model):
 
     def __init__(
         self,
-        created_at,
-        updated_at,
-        activated_at,
-        cancelled_at,
-        expires_at,
-        current_period_started_at,
-        current_period_ends_at,
-        state,
+        activated_at=None,
+        cancelled_at=None,
+        expires_at=None,
+        current_period_started_at=None,
+        current_period_ends_at=None,
+        state=None,
     ):
-        self.created_at = created_at
-        self.updated_at = updated_at
         self.activated_at = activated_at
         self.cancelled_at = cancelled_at
         self.expires_at = expires_at
@@ -35,8 +31,10 @@ class Subscription(db.Model):
         self.state = state
 
     id = db.Column(db.Integer, primary_key=True)
-    created_at = db.Column(db.DateTime)
-    updated_at = db.Column(db.DateTime)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = db.Column(
+        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
+    )
     activated_at = db.Column(db.DateTime)
     cancelled_at = db.Column(db.DateTime, nullable=True)
     expires_at = db.Column(db.DateTime, nullable=True)
@@ -53,7 +51,7 @@ class Subscription(db.Model):
             "expires_at": self.expires_at,
             "current_period_started_at": self.current_period_started_at,
             "current_period_ends_at": self.current_period_ends_at,
-            "state": self.state.value,
+            "state": self.state.value if self.state else None,
         }
 
     def activate(self):

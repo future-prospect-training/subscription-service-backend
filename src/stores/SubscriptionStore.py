@@ -24,13 +24,12 @@ class SubscriptionStore:
 
     def update_subscription(self, subscription_id, subscription_update_dto):
         try:
-            subscription = Subscription.query.get(subscription_id)
+            subscription = self.db.session.query(Subscription).get(subscription_id)
+            #subscription = Subscription.query.get(subscription_id)
             if not subscription:
                 return None
 
-            subscription_update_dict = dict(
-                subscription_update_dto
-            )  # Convert to a dictionary
+            subscription_update_dict = subscription_update_dto.to_dict()
             for key, value in subscription_update_dict.items():
                 setattr(subscription, key, value)
 

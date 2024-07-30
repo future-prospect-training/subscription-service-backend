@@ -73,7 +73,8 @@ class SubscriptionRoutes:
         }, HttpStatus.CREATED.value
 
     @validate_subscription_update_input
-    def update_subscription(self, subscription_update_dto, subscription_id):
+    def update_subscription(self, subscription_id):
+        subscription_update_dto = request.fields
         subscription = self.subscription_manager.get_subscription(subscription_id)
         if subscription is None:
             return {"error": "Subscription not found"}, HttpStatus.NOT_FOUND.value
