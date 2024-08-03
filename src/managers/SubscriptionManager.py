@@ -24,9 +24,6 @@ class SubscriptionManager:
         except OperationalError as e:
             logging.error(f"Database error creating subscription: {e}")
             raise
-        except ProgrammingError as e:
-            logging.error(f"Invalid SQL query: {e}")
-            raise
         except Exception as e:
             logging.error(f"Error creating subscription: {e}")
             raise
@@ -43,9 +40,6 @@ class SubscriptionManager:
         except OperationalError as e:
             logging.error(f"Database error updating subscription: {e}")
             raise
-        except ProgrammingError as e:
-            logging.error(f"Invalid SQL query: {e}")
-            raise
         except Exception as e:
             logging.error(f"Error updating subscription: {e}")
             raise
@@ -56,9 +50,6 @@ class SubscriptionManager:
         except OperationalError as e:
             logging.error(f"Database error deleting subscription: {e}")
             raise
-        except ProgrammingError as e:
-            logging.error(f"Invalid SQL query: {e}")
-            raise
         except Exception as e:
             logging.error(f"Error deleting subscription: {e}")
             raise
@@ -68,14 +59,13 @@ class SubscriptionManager:
             subscription = self.get_subscription(subscription_id)
             if subscription:
                 subscription.activate()
-                return self.subscription_store.update_subscription(subscription_id, subscription)
+                return self.subscription_store.update_subscription(
+                    subscription_id, subscription
+                )
             else:
                 raise ValueError("Subscription not found")
         except OperationalError as e:
             logging.error(f"Database error activating subscription: {e}")
-            raise
-        except ProgrammingError as e:
-            logging.error(f"Invalid SQL query: {e}")
             raise
         except Exception as e:
             logging.error(f"Error activating subscription: {e}")
@@ -86,14 +76,13 @@ class SubscriptionManager:
             subscription = self.get_subscription(subscription_id)
             if subscription:
                 subscription.cancel()
-                return self.subscription_store.update_subscription(subscription_id, subscription)
+                return self.subscription_store.update_subscription(
+                    subscription_id, subscription
+                )
             else:
                 raise ValueError("Subscription not found")
         except OperationalError as e:
             logging.error(f"Database error cancelling subscription: {e}")
-            raise
-        except ProgrammingError as e:
-            logging.error(f"Invalid SQL query: {e}")
             raise
         except Exception as e:
             logging.error(f"Error cancelling subscription: {e}")
@@ -104,14 +93,13 @@ class SubscriptionManager:
             subscription = self.get_subscription(subscription_id)
             if subscription:
                 subscription.expire()
-                return self.subscription_store.update_subscription(subscription_id, subscription)
+                return self.subscription_store.update_subscription(
+                    subscription_id, subscription
+                )
             else:
                 raise ValueError("Subscription not found")
         except OperationalError as e:
             logging.error(f"Database error expiring subscription: {e}")
-            raise
-        except ProgrammingError as e:
-            logging.error(f"Invalid SQL query: {e}")
             raise
         except Exception as e:
             logging.error(f"Error expiring subscription: {e}")
@@ -122,14 +110,13 @@ class SubscriptionManager:
             subscription = self.get_subscription(subscription_id)
             if subscription:
                 subscription.update_status()
-                return self.subscription_store.update_subscription(subscription_id, subscription)
+                return self.subscription_store.update_subscription(
+                    subscription_id, subscription
+                )
             else:
                 raise ValueError("Subscription not found")
         except OperationalError as e:
             logging.error(f"Database error updating subscription status: {e}")
-            raise
-        except ProgrammingError as e:
-            logging.error(f"Invalid SQL query: {e}")
             raise
         except Exception as e:
             logging.error(f"Error updating subscription status: {e}")
@@ -141,9 +128,6 @@ class SubscriptionManager:
         except OperationalError as e:
             logging.error(f"Database error getting active subscriptions: {e}")
             raise
-        except ProgrammingError as e:
-            logging.error(f"Invalid SQL query: {e}")
-            raise
         except Exception as e:
             logging.error(f"Error getting active subscriptions: {e}")
             raise
@@ -153,9 +137,6 @@ class SubscriptionManager:
             return self.subscription_store.get_pending_subscriptions()
         except OperationalError as e:
             logging.error(f"Database error getting pending subscriptions: {e}")
-            raise
-        except ProgrammingError as e:
-            logging.error(f"Invalid SQL query: {e}")
             raise
         except Exception as e:
             logging.error(f"Error getting pending subscriptions: {e}")
@@ -167,9 +148,6 @@ class SubscriptionManager:
         except OperationalError as e:
             logging.error(f"Database error getting expired subscriptions: {e}")
             raise
-        except ProgrammingError as e:
-            logging.error(f"Invalid SQL query: {e}")
-            raise
         except Exception as e:
             logging.error(f"Error getting expired subscriptions: {e}")
             raise
@@ -179,9 +157,6 @@ class SubscriptionManager:
             return self.subscription_store.get_cancelled_subscriptions()
         except OperationalError as e:
             logging.error(f"Database error getting cancelled subscriptions: {e}")
-            raise
-        except ProgrammingError as e:
-            logging.error(f"Invalid SQL query: {e}")
             raise
         except Exception as e:
             logging.error(f"Error getting cancelled subscriptions: {e}")
@@ -193,9 +168,6 @@ class SubscriptionManager:
         except OperationalError as e:
             logging.error(f"Database error getting subscription by user ID: {e}")
             raise
-        except ProgrammingError as e:
-            logging.error(f"Invalid SQL query: {e}")
-            raise
         except Exception as e:
             logging.error(f"Error getting subscription by user ID: {e}")
             raise
@@ -206,9 +178,6 @@ class SubscriptionManager:
         except OperationalError as e:
             logging.error(f"Database error getting subscription by product ID: {e}")
             raise
-        except ProgrammingError as e:
-            logging.error(f"Invalid SQL query: {e}")
-            raise
         except Exception as e:
             logging.error(f"Error getting subscription by product ID: {e}")
             raise
@@ -218,9 +187,6 @@ class SubscriptionManager:
             return self.subscription_store.get_subscription_by_status(status)
         except OperationalError as e:
             logging.error(f"Database error getting subscription by status: {e}")
-            raise
-        except ProgrammingError as e:
-            logging.error(f"Invalid SQL query: {e}")
             raise
         except Exception as e:
             logging.error(f"Error getting subscription by status: {e}")

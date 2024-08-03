@@ -42,10 +42,10 @@ class SubscriptionRoutes:
             methods=["PUT"],
         )
         self.bp.add_url_rule(
-            "/subscriptions/<int:subscription_id>",
-            "delete_subscription",
-            self.delete_subscription,
-            methods=["DELETE"],
+            "/subscriptions/<int:subscription_id>/cancel",
+            "cancel_subscription",
+            self.cancel_subscription,
+            methods=["PATCH"],
         )
 
     def get_all_subscriptions(self):
@@ -87,10 +87,16 @@ class SubscriptionRoutes:
             "data": updated_subscription.to_dict(),
         }, HttpStatus.OK.value
 
-    def delete_subscription(self, subscription_id):
+    def cancel_subscription(self, subscription_id):
         subscription = self.subscription_manager.get_subscription(subscription_id)
         if subscription is None:
             return {"error": "Subscription not found"}, HttpStatus.NOT_FOUND.value
 
-        self.subscription_manager.delete_subscription(subscription)
-        return {"success": True}, HttpStatus.NO_CONTENT.value
+        subscription_update_dto = {"status": "cancelled"}
+        updated_subscription = self.subscription_manager.update_subscription(
+            subscription_id, subscription_update_dto
+        )
+        return {
+            "success": True,
+            "data": updated_subscription.to_dict(),
+        }, HttpStatus.OK.value

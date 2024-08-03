@@ -25,7 +25,7 @@ class SubscriptionStore:
     def update_subscription(self, subscription_id, subscription_update_dto):
         try:
             subscription = self.db.session.query(Subscription).get(subscription_id)
-            #subscription = Subscription.query.get(subscription_id)
+            # subscription = Subscription.query.get(subscription_id)
             if not subscription:
                 return None
 
@@ -35,19 +35,6 @@ class SubscriptionStore:
 
             self.db.session.commit()
             return subscription
-        except Exception as e:
-            self.db.session.rollback()
-            raise e
-
-    def delete_subscription(self, subscription_id):
-        try:
-            subscription = Subscription.query.get(subscription_id)
-            if not subscription:
-                return None
-
-            self.db.session.delete(subscription)
-            self.db.session.commit()
-            return True
         except Exception as e:
             self.db.session.rollback()
             raise e

@@ -76,19 +76,3 @@ class Subscription(db.Model):
             self.cancel()
         elif self.activated_at and self.state == SubscriptionState.pending:
             self.activate()
-
-    @classmethod
-    def get_active_subscriptions(cls):
-        return cls.query.filter_by(state=SubscriptionState.active).all()
-
-    @classmethod
-    def get_pending_subscriptions(cls):
-        return cls.query.filter_by(state=SubscriptionState.pending).all()
-
-    @classmethod
-    def get_cancelled_subscriptions(cls):
-        return cls.query.filter_by(state=SubscriptionState.cancelled).all()
-
-    @classmethod
-    def get_expired_subscriptions(cls):
-        return cls.query.filter_by(state=SubscriptionState.expired).all()
