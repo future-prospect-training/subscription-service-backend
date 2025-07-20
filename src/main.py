@@ -2,7 +2,9 @@ import logging
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
+import redis.asyncio as redis
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pythonjsonlogger import jsonlogger
 
@@ -23,13 +25,25 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     logger.addHandler(handler)
     logger.setLevel(settings.log_level)
 
+    # Initialize Redis
+    app.state.redis = redis.from_url(settings.redis_url)
+
     await connect_db()
     yield
     await disconnect_db()
+    # Close Redis connection
+    await app.state.redis.close()
 
 
 app = FastAPI(lifespan=lifespan)
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.cors_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 app.add_middleware(CorrelationIdMiddleware)
 app.include_router(auth_router)
 

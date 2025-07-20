@@ -13,5 +13,18 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
 
+  app:
+    build: .
+    command: poetry run uvicorn src.main:app --host 0.0.0.0 --port 8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://postgres:mysecretpassword@db:5432/postgres
+      SECRET: your-secret-key # Replace with a strong, random secret in production
+    depends_on:
+      - db
+
 volumes:
   db_data:

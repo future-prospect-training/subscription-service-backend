@@ -6,6 +6,7 @@ from fastapi import Depends, Request
 from fastapi_users import BaseUserManager, FastAPIUsers, UUIDIDMixin
 from fastapi_users.authentication import AuthenticationBackend, BearerTransport, JWTStrategy
 
+from prisma.models import User as PrismaUser
 from src.auth.schemas import UserRead
 from src.database import db
 
@@ -30,12 +31,12 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, str]):
         print(f"Verification requested for user {user.id}. Verification token: {token}")
 
 
-async def get_user_db() -> AsyncGenerator[db.user, None]:
+async def get_user_db() -> AsyncGenerator[PrismaUser, None]:
     """Yield the Prisma user client."""
     yield db.user
 
 
-async def get_user_manager(user_db: Annotated[db.user, Depends(get_user_db)]) -> AsyncGenerator[UserManager, None]:
+async def get_user_manager(user_db: Annotated[PrismaUser, Depends(get_user_db)]) -> AsyncGenerator[UserManager, None]:
     """Yield the user manager."""
     yield UserManager(user_db)
 

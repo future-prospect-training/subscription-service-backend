@@ -2,32 +2,32 @@ FROM python:3.12-slim as builder
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc \
-    python3-dev \
-    libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
+# Install Poetry
+RUN pip install poetry
 
-COPY requirements.txt .
-RUN pip wheel --no-cache-dir --wheel-dir /wheels -r requirements.txt
+# Copy pyproject.toml and poetry.lock to leverage Docker cache
+COPY pyproject.toml poetry.lock* ./
+
+# Install dependencies using Poetry
+RUN poetry install --no-root --no-dev
 
 FROM python:3.12-slim as production
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
+# Copy installed dependencies from builder stage
+COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
 
-COPY --from=builder /wheels /wheels
-COPY --from=builder /app/requirements.txt .
-RUN pip install --no-cache-dir --find-links /wheels -r requirements.txt
-
+# Copy application code
 COPY . .
 
+# Create a non-root user
 RUN adduser --system --group appuser
 USER appuser
 
-EXPOSE 3000
+# Expose the port FastAPI runs on
+EXPOSE 8000
 
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:3000", "run:app"]
+# Command to run the application with Uvicorn
+CMD ["poetry", "run", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]

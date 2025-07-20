@@ -44,7 +44,8 @@ This project is a modern Python-based backend service for managing subscriptions
 
     ```
     DATABASE_URL="postgresql://postgres:mysecretpassword@localhost:5432/postgres"
-    # Add other environment variables as needed, e.g., for authentication
+    SECRET="your-secret-key" # Required for JWT authentication
+    # Add other environment variables as needed
     ```
 
     *Note: The `DATABASE_URL` should match the configuration in `docker-compose.yml`.*
