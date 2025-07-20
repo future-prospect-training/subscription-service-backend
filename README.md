@@ -1,24 +1,27 @@
 # Subscription Service Backend
 
-This project is a Python-based backend service for managing subscriptions, built with Flask and SQLAlchemy.
+This project is a modern Python-based backend service for managing subscriptions, built with FastAPI, Poetry, and Prisma.
 
 ## Features
 
-*   **RESTful API:** Implements CRUD operations for subscriptions and users.
-*   **Database Migrations:** Uses Flask-Migrate and Alembic for database schema management.
-*   **API Documentation:** Integrated with Flask-RESTX for interactive Swagger UI documentation.
-*   **Authentication:** Basic JWT authentication for securing API endpoints.
-*   **Structured Logging:** Configured with `python-json-logger` for better log analysis.
-*   **Error Handling:** Custom exception classes and centralized error handling for consistent API responses.
-*   **Containerization:** Dockerfile included for easy deployment.
+*   **FastAPI Framework:** High-performance, easy-to-use web framework.
+*   **Poetry for Dependency Management:** Ensures reproducible builds and clean dependency management.
+*   **Prisma ORM:** Type-safe database access and migrations.
+*   **Modular Architecture:** Organized into features (e.g., `users`) using FastAPI's `APIRouter`.
+*   **Pydantic for Data Validation:** Robust data validation and serialization.
+*   **Custom Error Handling:** Consistent and user-friendly error responses.
+*   **Correlation ID Middleware:** For improved request tracing and logging.
+*   **Ruff for Linting & Formatting:** Ensures code quality and adherence to Pythonic standards.
+*   **Pre-commit Hooks:** Automates code quality checks before commits.
+*   **Containerization:** Docker Compose setup for local development database.
 
 ## Setup
 
 ### Prerequisites
 
-*   Docker (for running the local database)
-*   Python 3.8+
-*   `pip` for dependency management
+*   [Docker](https://docs.docker.com/get-docker/) (for running the local database)
+*   [Poetry](https://python-poetry.org/docs/#installation) (for dependency management)
+*   Python 3.12+
 
 ### Local Development Setup
 
@@ -29,71 +32,57 @@ This project is a Python-based backend service for managing subscriptions, built
     cd subscription-service-backend
     ```
 
-2.  **Create and activate a virtual environment:**
+2.  **Install dependencies using Poetry:**
 
     ```bash
-    python3 -m venv venv
-    source venv/bin/activate
+    poetry install
     ```
 
-3.  **Install dependencies:**
-
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-4.  **Set up environment variables:**
+3.  **Set up environment variables:**
 
     Create a `.env` file in the project root with the following content:
 
     ```
-    SECRET_KEY=your_super_secret_key
-    DATABASE_URL=postgresql://postgres:mysecretpassword@localhost:5432/postgres
-    JWT_SECRET_KEY=your_jwt_secret_key
+    DATABASE_URL="postgresql://postgres:mysecretpassword@localhost:5432/postgres"
+    # Add other environment variables as needed, e.g., for authentication
     ```
 
-    *Replace `your_super_secret_key` and `your_jwt_secret_key` with strong, randomly generated values.*
+    *Note: The `DATABASE_URL` should match the configuration in `docker-compose.yml`.*
 
-5.  **Start the local PostgreSQL database:**
+4.  **Start the local PostgreSQL database:**
 
     ```bash
-    bash start_local_db.sh
+    docker-compose up -d
     ```
 
-    This will start PostgreSQL and pgAdmin containers.
+    This will start a PostgreSQL container.
 
-6.  **Initialize and run database migrations:**
+5.  **Apply Prisma database migrations:**
 
     ```bash
-    set -a; . ./.env; set +a; export FLASK_APP=run.py && flask db upgrade
+    poetry run prisma migrate dev --name init
     ```
 
-    *If this is the first time running migrations, you might need to initialize first:*
+    This will create the necessary tables in your local database.
+
+6.  **Run the application:**
 
     ```bash
-    set -a; . ./.env; set +a; export FLASK_APP=run.py && flask db init
-    set -a; . ./.env; set +a; export FLASK_APP=run.py && flask db migrate -m "Initial migration."
-    set -a; . ./.env; set +a; export FLASK_APP=run.py && flask db upgrade
+    poetry run uvicorn src.main:app --reload
     ```
 
-7.  **Run the application:**
-
-    ```bash
-    python run.py
-    ```
-
-    The API will be accessible at `http://localhost:3000`.
+    The API will be accessible at `http://127.0.0.1:8000`.
 
 ## API Documentation
 
-Access the interactive API documentation (Swagger UI) at `http://localhost:3000/` once the application is running.
+FastAPI automatically generates interactive API documentation (Swagger UI) at `http://127.0.0.1:8000/docs` and ReDoc documentation at `http://127.0.0.1:8000/redoc` once the application is running.
 
 ## Running Tests
 
-To run the tests:
+To run the tests (once implemented):
 
 ```bash
-set -a; . ./.env; set +a; pytest
+poetry run pytest
 ```
 
 ## Docker
@@ -107,5 +96,9 @@ docker build -t subscription-service-backend .
 ### Run the Docker container
 
 ```bash
-docker run -p 3000:3000 --env-file ./.env subscription-service-backend
+docker run -p 8000:8000 --env-file ./.env subscription-service-backend
 ```
+
+## Future Plans
+
+For a detailed roadmap and future development plans, please refer to `docs/plan.md`.
