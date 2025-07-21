@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client-py"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  hashed_password String
+  is_active     Boolean   @default(true)
+  is_superuser  Boolean   @default(false)
+  is_verified   Boolean   @default(false)
+  name          String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  encryptionKeys EncryptionKey[]
+}
+
+model EncryptionKey {
+  id        String   @id @default(uuid())
+  name      String
+  client_id String   @unique
+  client_secret_hash String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  revokedAt DateTime?
+}
