@@ -1,6 +1,8 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+
 from prisma import Prisma
 from prisma.models import EncryptionKey
+
 
 class EncryptionKeyRepository:
     """Handles data access for the EncryptionKey model."""
@@ -31,5 +33,5 @@ class EncryptionKeyRepository:
         """Revoke an encryption key by its ID."""
         return await self.db.encryptionkey.update(
             where={"id": key_id},
-            data={"revokedAt": datetime.now(timezone.utc)},
+            data={"revokedAt": datetime.now(UTC)},
         )
