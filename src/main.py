@@ -9,6 +9,7 @@ from fastapi.responses import JSONResponse
 from pythonjsonlogger import jsonlogger
 
 from src.auth.router import router as auth_router
+from src.services.encryption_keys.router import router as encryption_keys_router
 from src.config import settings
 from src.database import connect_db, disconnect_db
 from src.middleware import CorrelationIdMiddleware
@@ -46,6 +47,7 @@ app.add_middleware(
 )
 app.add_middleware(CorrelationIdMiddleware)
 app.include_router(auth_router)
+app.include_router(encryption_keys_router, prefix="/v1", tags=["encryption-keys"])
 
 
 @app.exception_handler(HTTPException)

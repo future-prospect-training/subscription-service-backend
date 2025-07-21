@@ -1,3 +1,36 @@
+# Project Roadmap: Supabase Integration & Encryption Key Service
+
+This document outlines the plan to build a scalable and secure subscription service backend. The core objectives are to integrate with Supabase for data persistence and to implement a robust service for managing client-side encryption keys.
+
+## Phase 1: Supabase Integration
+
+1.  **Configure Database Connection:**
+    *   **Goal:** Switch from a local database to a managed Supabase PostgreSQL instance.
+    *   **Action:** Create a `.env` file from the `.env-example` template and populate it with the Supabase `DATABASE_URL`. Update `src/config.py` to ensure the application uses this new connection string.
+2.  **Apply Database Migrations:**
+    *   **Goal:** Set up the initial database schema in the Supabase instance.
+    *   **Action:** Run the existing Prisma migrations (`20250720110349_init` and `20250720123028_add_fastapi_users_fields`) against the Supabase database to create the `User` table and other necessary structures.
+
+## Phase 2: Encryption Key Service
+
+1.  **Define Database Model:**
+    *   **Goal:** Create a database table to store encryption key metadata.
+    *   **Action:** Add a new `EncryptionKey` model to `prisma/schema.prisma`. This model will include fields for a unique ID, a hash of the client secret, a user-friendly name, the associated `userId`, and its status (e.g., `active`, `revoked`).
+2.  **Implement Repository Layer:**
+    *   **Goal:** Abstract database interactions for the encryption key service.
+    *   **Action:** Create an `EncryptionKeyRepository` to handle all data access logic (create, read, update, delete) for the `EncryptionKey` model. This promotes separation of concerns.
+3.  **Implement Service Layer:**
+    *   **Goal:** Encapsulate the business logic for managing encryption keys.
+    *   **Action:** Create an `EncryptionKeyService` that uses the repository. This service will handle the logic for generating new keys (returning the raw key to the user only once), validating incoming keys against the stored hash, and revoking keys.
+4.  **Create API Endpoints:**
+    *   **Goal:** Expose the encryption key functionality to authenticated users.
+    *   **Action:** Add a new `APIRouter` in `src/services/encryption_keys/router.py`. This router will define endpoints for creating, listing, and deleting encryption keys, protected by authentication.
+5.  **Integrate into Main Application:**
+    *   **Goal:** Make the new service available to the rest of the application.
+    *   **Action:** Import and include the encryption key router in the main FastAPI app instance in `src/main.py`.
+
+---
+
 # Refactoring Plan: Subscription Service Backend (Python Mirror)
 
 This document outlines the step-by-step progression for refactoring the `subscription-service-backend` project into a modern, Pythonic application, mirroring the architectural principles of the provided NestJS project. The goal is to achieve a high-quality, production-ready backend using FastAPI, Poetry, and other best-in-class Python tools, while strictly adhering to Pythonic coding standards and file organization.
